@@ -17,27 +17,28 @@ extern SPI_HandleTypeDef hspi1;
 
 void OLED_WyslijKomende(uint8_t bajt){
 
-	HAL_GPIO_WritePin(CHIPSELECT_GPIO_Port, CHIPSELECT_Pin, GPIO_PIN_RESET); //Wybierz OLED
-	HAL_GPIO_WritePin(D_C_GPIO_Port, D_C_Pin, GPIO_PIN_RESET); //przesył
-	HAL_SPI_Transmit(&hspi1, &bajt, 1, 1000);
-	HAL_GPIO_WritePin(CHIPSELECT_GPIO_Port, CHIPSELECT_Pin, GPIO_PIN_SET); //Od-wybierz OLED
+	HAL_GPIO_WritePin(CHIPSELECT_GPIO_Port, CHIPSELECT_Pin, GPIO_PIN_RESET);	//Wybierz OLED
+	HAL_GPIO_WritePin(D_C_GPIO_Port, D_C_Pin, GPIO_PIN_RESET); 					//DC = 0: polecenie
+	HAL_SPI_Transmit(&hspi1, &bajt, 1, 10);										//transmisja bajtu polecenia
+	HAL_GPIO_WritePin(CHIPSELECT_GPIO_Port, CHIPSELECT_Pin, GPIO_PIN_SET); 		//zwolnij OLED
 }
 
 void OLED_WyslijDane(uint8_t* buffor, uint8_t rozmiar){
 
-	HAL_GPIO_WritePin(CHIPSELECT_GPIO_Port, CHIPSELECT_Pin, GPIO_PIN_RESET); //Wybierz OLED
-	HAL_GPIO_WritePin(D_C_GPIO_Port, D_C_Pin, GPIO_PIN_RESET); //przesył
-	HAL_SPI_Transmit(&hspi1, buffor, rozmiar, 1000);
-	HAL_GPIO_WritePin(CHIPSELECT_GPIO_Port, CHIPSELECT_Pin, GPIO_PIN_SET); //Od-wybierz OLED
+	HAL_GPIO_WritePin(CHIPSELECT_GPIO_Port, CHIPSELECT_Pin, GPIO_PIN_RESET); 	//Wybierz OLED
+	HAL_GPIO_WritePin(D_C_GPIO_Port, D_C_Pin, GPIO_PIN_SET); 					//DC = 1: dane do wyświetlenia
+	HAL_SPI_Transmit(&hspi1, buffor, rozmiar, 10);								//transmisja danych do wyświetlenia
+	HAL_GPIO_WritePin(CHIPSELECT_GPIO_Port, CHIPSELECT_Pin, GPIO_PIN_SET); 		//zwolnij OLED
 }
 
-uint8_t OLED_Buffor[OLED_WYSOKOSC*OLED_SZEROKOSC/8];
+uint8_t OLED_Buffor[OLED_WYSOKOSC * OLED_SZEROKOSC / 8] = {"Witaj przygodo z wyswietlaczem OLED"};
 
 
 void OLED_Init(void){
 
 	HAL_Delay(100);
 
+	OLED_WyslijKomende(0xAE); //display off
 
 	OLED_WyslijKomende(0x20); //Set Memory Addressing Mode
 
@@ -55,6 +56,7 @@ void OLED_Init(void){
 	OLED_WyslijKomende(0x40); //--set start line address - CHECK
 
 	OLED_WyslijKomende(0x81); //--set contrast control register - CHECK
+	OLED_WyslijKomende(0xFF);
 
 	OLED_WyslijKomende(0xA1); //--set segment re-map 0 to 127 - CHECK
 
@@ -62,7 +64,7 @@ void OLED_Init(void){
 
 	OLED_WyslijKomende(0xA8); //--set multiplex ratio(1 to 64) - CHECK
 
-	OLED_WyslijKomende(0x3F); // ustawia wysokosc
+	OLED_WyslijKomende(0x3F); // ustawia wysokosc = 64
 
 	OLED_WyslijKomende(0xA4); //0xa4,Output follows RAM content;0xa5,Output ignores RAM content
 
@@ -80,7 +82,7 @@ void OLED_Init(void){
 
 	OLED_WyslijKomende(0xDA); //--set com pins hardware configuration - CHECK
 
-	OLED_WyslijKomende(0x12); // cos z wysokoscia
+	OLED_WyslijKomende(0x12); // wysokość = 64
 
 	OLED_WyslijKomende(0xDB); //--set vcomh
 
@@ -101,7 +103,7 @@ void OLED_OdswiezEkran(void){
 	for(uint8_t i = 0; i < OLED_WYSOKOSC / 8; i++){
 		OLED_WyslijKomende(0xB0 + i); //Set Page Start Address for Page Addressing Mode
 		OLED_WyslijKomende(0x00); //Set Lower Column Start Address for Page Addressing Mode
-		OLED_WyslijKomende(0x00); //Set Higher Column Start Address for Page Addressing	Mode
+		OLED_WyslijKomende(0x10); //Set Higher Column Start Address for Page Addressing	Mode
 		OLED_WyslijDane(&OLED_Buffor[OLED_SZEROKOSC*i], OLED_SZEROKOSC);
 	}
 }

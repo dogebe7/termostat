@@ -11,8 +11,8 @@
 extern TIM_HandleTypeDef htim3;
 extern float fTempG;
 extern float fTempD;
-#define TEMP_MIN 0;
-#define TEMP_MAX 100;
+#define TEMP_MIN 0
+#define TEMP_MAX 100
 
 
 void UstawPWM(uint16_t sPWM, uint8_t cKanal){
