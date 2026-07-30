@@ -24,6 +24,10 @@
 #include "LM75.h"
 #include "Regulator.h"
 #include "OLED.h"
+#include "OLED_Czcionka.h"
+#include "stdio.h"
+#include "string.h"
+#include "funkcje.h"
 
 /* USER CODE END Includes */
 
@@ -51,9 +55,9 @@ SPI_HandleTypeDef hspi1;
 TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
-float fTempG;
-float fTempD;
+float fTemp;
 uint8_t cWartoscPWM;
+char Napis[25];
 
 
 /* USER CODE END PV */
@@ -81,7 +85,6 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	cWartoscPWM = 0;
 
 
   /* USER CODE END 1 */
@@ -110,7 +113,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
   WlaczPWM(TIM_CHANNEL_4);
   OLED_Init();
-  uint16_t i = 0;
+
+  cWartoscPWM = 0;
 
   /* USER CODE END 2 */
 
@@ -118,17 +122,13 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	//  odczytajID();
-	 // odczytajTempCzujnikGorny(&fTempG);
-	//  odczytajTempCzujnikDolny(&fTempD);
+	  WypiszTemp();
+
 	  cWartoscPWM = CzlonP();
-	  OLED_NarysujPiksel(i++, 20);
-	  OLED_OdswiezEkran();
-
 	  UstawPWM(cWartoscPWM, TIM_CHANNEL_4);
+
+
 	  HAL_Delay(500);
-
-
 	  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);	//mignij LED
     /* USER CODE END WHILE */
 

@@ -76,6 +76,10 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN Private defines */
 
+typedef enum{
+	Gorny,
+	Dolny
+} CZUJNIK;
 
 
 /* USER CODE END Private defines */

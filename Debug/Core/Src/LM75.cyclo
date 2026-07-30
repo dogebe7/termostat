@@ -1,3 +1,2 @@
-../Core/Src/LM75.c:15:9:odczytajID	1
-../Core/Src/LM75.c:28:9:odczytajTempCzujnikGorny	1
-../Core/Src/LM75.c:45:9:odczytajTempCzujnikDolny	1
+../Core/Src/LM75.c:14:9:odczytajID	1
+../Core/Src/LM75.c:27:9:odczytajTemp	2

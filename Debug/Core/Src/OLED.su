@@ -1,5 +1,11 @@
-../Core/Src/OLED.c:18:6:OLED_WyslijKomende	16	static
-../Core/Src/OLED.c:26:6:OLED_WyslijDane	16	static
-../Core/Src/OLED.c:37:6:OLED_Init	8	static
-../Core/Src/OLED.c:101:6:OLED_OdswiezEkran	16	static
-../Core/Src/OLED.c:112:6:OLED_NarysujPiksel	16	static
+../Core/Src/OLED.c:21:6:OLED_WyslijKomende	16	static
+../Core/Src/OLED.c:29:6:OLED_WyslijDane	16	static
+../Core/Src/OLED.c:44:6:OLED_Init	16	static
+../Core/Src/OLED.c:115:6:OLED_OdswiezEkran	16	static
+../Core/Src/OLED.c:126:6:OLED_NarysujPiksel	24	static
+../Core/Src/OLED.c:147:6:OLED_UstawKursor	16	static
+../Core/Src/OLED.c:155:6:OLED_WypelnijEkran	24	static
+../Core/Src/OLED.c:164:6:OLED_NarysujLinie	48	static
+../Core/Src/OLED.c:192:6:OLED_NarysujProstokat	32	static
+../Core/Src/OLED.c:204:6:OLED_NapiszZnak	48	static
+../Core/Src/OLED.c:237:6:OLED_NapiszString	24	static

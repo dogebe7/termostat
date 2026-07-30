@@ -7,7 +7,17 @@
 
 #ifndef SRC_REGULATOR_H_
 #define SRC_REGULATOR_H_
+
 #include "stm32c0xx_hal.h"
+#include "LM75.h"
+#include "main.h"
+
+
+extern TIM_HandleTypeDef htim3;
+extern float fTemp;
+
+#define TEMP_MIN 0
+#define TEMP_MAX 100
 
 void UstawPWM(uint16_t sPWM, uint8_t cKanal);
 void WlaczPWM(uint8_t cKanal);

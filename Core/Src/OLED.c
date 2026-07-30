@@ -8,7 +8,10 @@
 #include "OLED.h"
 #include "main.h"
 #include "stm32c0xx_hal.h"
-#include <stdio.h>
+#include "stdio.h"
+#include "math.h"
+#include "stdlib.h"
+#include "OLED_Czcionka.h"
 extern I2C_HandleTypeDef hi2c2;
 extern SPI_HandleTypeDef hspi1;
 
@@ -31,7 +34,11 @@ void OLED_WyslijDane(uint8_t* buffor, uint8_t rozmiar){
 	HAL_GPIO_WritePin(CHIPSELECT_GPIO_Port, CHIPSELECT_Pin, GPIO_PIN_SET); 		//zwolnij OLED
 }
 
-uint8_t OLED_Buffor[OLED_WYSOKOSC * OLED_SZEROKOSC / 8] = {"Witaj przygodo z wyswietlaczem OLED"};
+
+
+static uint8_t OLED_Buffor[OLED_WYSOKOSC * OLED_SZEROKOSC / 8] = {"Witaj przygodo z wyswietlaczem OLED"};
+static OLED_t OLED;
+
 
 
 void OLED_Init(void){
@@ -94,7 +101,14 @@ void OLED_Init(void){
 
 
 	OLED_WyslijKomende(0xAF); //--turn on SSD1306 panel
+
+
+	OLED_WypelnijEkran(Czarny);
+	OLED_NarysujProstokat(0, 0, 127, 63, Bialy);
+	OLED_UstawKursor(3, 3);
 	OLED_OdswiezEkran();
+
+	OLED.Zinicjalizowany = 1;
 
 }
 
@@ -109,10 +123,127 @@ void OLED_OdswiezEkran(void){
 }
 
 
-void OLED_NarysujPiksel(uint8_t x, uint8_t y){
-	if(x >= OLED_SZEROKOSC || x < 0 || y >= OLED_WYSOKOSC || y < 0) return;
+void OLED_NarysujPiksel(uint8_t x, uint8_t y, OLED_KOLOR kolor){
 
-	OLED_Buffor[x + (y / 8) * OLED_SZEROKOSC] |= 1 << (y % 8);
+	if(x >= OLED_SZEROKOSC || x < 0 || y >= OLED_WYSOKOSC || y < 0)
+		return;
 
+
+	if(OLED.OdwroconyKolor){
+		kolor = (OLED_KOLOR)!kolor;
+	}
+
+
+	if(kolor == Bialy){
+		OLED_Buffor[x + (y / 8) * OLED_SZEROKOSC] |= 1 << (y % 8);
+	}
+	else{
+		OLED_Buffor[x + (y / 8) * OLED_SZEROKOSC] &= ~(1 << (y % 8));
+	}
 }
 
+
+
+void OLED_UstawKursor(uint8_t x, uint8_t y){
+
+	OLED.ObecnyX = x;
+	OLED.ObecnyY = y;
+}
+
+
+
+void OLED_WypelnijEkran(OLED_KOLOR kolor){
+
+	for(uint32_t i = 0; i < sizeof(OLED_Buffor); i++){
+		OLED_Buffor[i] = (kolor == Bialy) ? 0xFF : 0x00;
+	}
+}
+
+
+
+void OLED_NarysujLinie(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, OLED_KOLOR kolor){
+
+	int32_t deltaX = abs(x2 - x1);
+	int32_t deltaY = abs(y2 - y1);
+	int32_t znakX = ((x1 < x2) ? 1 : -1);
+	int32_t znakY = ((y1 < y2) ? 1 : -1);
+	int32_t blad = deltaX - deltaY;
+	int32_t blad2;
+
+	OLED_NarysujPiksel(x2, y2, kolor);
+	while((x1 != x2) || (y1 != y2)){
+		OLED_NarysujPiksel(x1, y1, kolor);
+		blad2 = blad * 2;
+
+		if(blad2 > -deltaY){
+			blad -= deltaY;
+			x1 += znakX;
+		}
+
+		if(blad2 < deltaX){
+			blad += deltaX;
+			y1 += znakY;
+		}
+	}
+}
+
+
+
+void OLED_NarysujProstokat(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, OLED_KOLOR kolor){
+
+	OLED_NarysujLinie(x1,y1,x2,y1,kolor);
+	OLED_NarysujLinie(x2,y1,x2,y2,kolor);
+	OLED_NarysujLinie(x2,y2,x1,y2,kolor);
+	OLED_NarysujLinie(x1,y2,x1,y1,kolor);
+
+  return;
+}
+
+
+
+char OLED_NapiszZnak(char ch, CzcionkaDef czcionka, OLED_KOLOR kolor){
+
+	uint32_t i, b, j;
+
+	if(ch < 32 || ch > 126)
+	        return 0;
+
+	// Check remaining space on current line
+	if(OLED_SZEROKOSC < (OLED.ObecnyX + czcionka.Szerokosc) || OLED_WYSOKOSC < (OLED.ObecnyY + czcionka.Wysokosc)){
+
+		return 0; // Not enough space on current line
+	}
+
+
+	for(i = 0; i < czcionka.Wysokosc; i++) {
+	        b = czcionka.dane[(ch - 32) * czcionka.Wysokosc + i];
+	        for(j = 0; j < czcionka.Szerokosc; j++) {
+	            if((b << j) & 0x8000)  {
+	                OLED_NarysujPiksel(OLED.ObecnyX + j, OLED.ObecnyY + i, (OLED_KOLOR)kolor);
+	            } else {
+	            	OLED_NarysujPiksel(OLED.ObecnyX + j, OLED.ObecnyY + i, (OLED_KOLOR)!kolor);
+	            }
+	        }
+	    }
+	// The current space is now taken
+	OLED.ObecnyX += czcionka.Szerokosc;
+
+	// Return written char for validation
+	return ch;
+}
+
+
+
+char OLED_NapiszString(char* napis,CzcionkaDef czcionka, OLED_KOLOR kolor){
+	// Write until null-byte
+	    while (*napis) {
+	        if (OLED_NapiszZnak(*napis, czcionka, kolor) != *napis){
+	            // Char could not be written
+	            return *napis;
+	        }
+	        // Next char
+	        napis++;
+	    }
+	    // Everything ok
+	    return *napis;
+	}

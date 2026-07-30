@@ -5,14 +5,6 @@
  *      Author: dorota
  */
 #include "Regulator.h"
-#include "main.h"
-#include "stm32c0xx_hal.h"
-#include "LM75.h"
-extern TIM_HandleTypeDef htim3;
-extern float fTempG;
-extern float fTempD;
-#define TEMP_MIN 0
-#define TEMP_MAX 100
 
 
 void UstawPWM(uint16_t sPWM, uint8_t cKanal){
@@ -41,7 +33,7 @@ float CzlonP(){
 	float fWartZadana = 10;
 	float fZakresTemperatur = TEMP_MAX - TEMP_MIN;
 
-	fBlad = odczytajTempCzujnikGorny(&fTempG) - fWartZadana;
+	fBlad = odczytajTemp(&fTemp, 1) - fWartZadana;
 	fUchyb = fBlad / fZakresTemperatur;
 	fWyjscie = (fUchyb * fWzmocnienie + fWstepneWysterowanie) * 65535;
 

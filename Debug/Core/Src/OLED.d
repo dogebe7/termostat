@@ -31,7 +31,8 @@ Core/Src/OLED.o: ../Core/Src/OLED.c ../Core/Inc/OLED.h \
  ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_spi_ex.h \
  ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_tim.h \
  ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_tim_ex.h \
- ../Core/Inc/main.h
+ ../Core/Inc/OLED_Czcionka.h ../Core/Inc/main.h \
+ ../Core/Inc/OLED_Czcionka.h
 ../Core/Inc/OLED.h:
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal.h:
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_ll_system.h:
@@ -65,4 +66,6 @@ Core/Src/OLED.o: ../Core/Src/OLED.c ../Core/Inc/OLED.h \
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_spi_ex.h:
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_tim.h:
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_tim_ex.h:
+../Core/Inc/OLED_Czcionka.h:
 ../Core/Inc/main.h:
+../Core/Inc/OLED_Czcionka.h:

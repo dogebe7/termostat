@@ -7,7 +7,9 @@
 C_SRCS += \
 ../Core/Src/LM75.c \
 ../Core/Src/OLED.c \
+../Core/Src/OLED_Czcionka.c \
 ../Core/Src/Regulator.c \
+../Core/Src/funkcje.c \
 ../Core/Src/main.c \
 ../Core/Src/stm32c0xx_hal_msp.c \
 ../Core/Src/stm32c0xx_it.c \
@@ -18,7 +20,9 @@ C_SRCS += \
 OBJS += \
 ./Core/Src/LM75.o \
 ./Core/Src/OLED.o \
+./Core/Src/OLED_Czcionka.o \
 ./Core/Src/Regulator.o \
+./Core/Src/funkcje.o \
 ./Core/Src/main.o \
 ./Core/Src/stm32c0xx_hal_msp.o \
 ./Core/Src/stm32c0xx_it.o \
@@ -29,7 +33,9 @@ OBJS += \
 C_DEPS += \
 ./Core/Src/LM75.d \
 ./Core/Src/OLED.d \
+./Core/Src/OLED_Czcionka.d \
 ./Core/Src/Regulator.d \
+./Core/Src/funkcje.d \
 ./Core/Src/main.d \
 ./Core/Src/stm32c0xx_hal_msp.d \
 ./Core/Src/stm32c0xx_it.d \
@@ -45,7 +51,7 @@ Core/Src/%.o Core/Src/%.su Core/Src/%.cyclo: ../Core/Src/%.c Core/Src/subdir.mk
 clean: clean-Core-2f-Src
 
 clean-Core-2f-Src:
-	-$(RM) ./Core/Src/LM75.cyclo ./Core/Src/LM75.d ./Core/Src/LM75.o ./Core/Src/LM75.su ./Core/Src/OLED.cyclo ./Core/Src/OLED.d ./Core/Src/OLED.o ./Core/Src/OLED.su ./Core/Src/Regulator.cyclo ./Core/Src/Regulator.d ./Core/Src/Regulator.o ./Core/Src/Regulator.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/stm32c0xx_hal_msp.cyclo ./Core/Src/stm32c0xx_hal_msp.d ./Core/Src/stm32c0xx_hal_msp.o ./Core/Src/stm32c0xx_hal_msp.su ./Core/Src/stm32c0xx_it.cyclo ./Core/Src/stm32c0xx_it.d ./Core/Src/stm32c0xx_it.o ./Core/Src/stm32c0xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32c0xx.cyclo ./Core/Src/system_stm32c0xx.d ./Core/Src/system_stm32c0xx.o ./Core/Src/system_stm32c0xx.su
+	-$(RM) ./Core/Src/LM75.cyclo ./Core/Src/LM75.d ./Core/Src/LM75.o ./Core/Src/LM75.su ./Core/Src/OLED.cyclo ./Core/Src/OLED.d ./Core/Src/OLED.o ./Core/Src/OLED.su ./Core/Src/OLED_Czcionka.cyclo ./Core/Src/OLED_Czcionka.d ./Core/Src/OLED_Czcionka.o ./Core/Src/OLED_Czcionka.su ./Core/Src/Regulator.cyclo ./Core/Src/Regulator.d ./Core/Src/Regulator.o ./Core/Src/Regulator.su ./Core/Src/funkcje.cyclo ./Core/Src/funkcje.d ./Core/Src/funkcje.o ./Core/Src/funkcje.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/stm32c0xx_hal_msp.cyclo ./Core/Src/stm32c0xx_hal_msp.d ./Core/Src/stm32c0xx_hal_msp.o ./Core/Src/stm32c0xx_hal_msp.su ./Core/Src/stm32c0xx_it.cyclo ./Core/Src/stm32c0xx_it.d ./Core/Src/stm32c0xx_it.o ./Core/Src/stm32c0xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32c0xx.cyclo ./Core/Src/system_stm32c0xx.d ./Core/Src/system_stm32c0xx.o ./Core/Src/system_stm32c0xx.su
 
 .PHONY: clean-Core-2f-Src
 
