@@ -54,7 +54,10 @@ TIM_HandleTypeDef htim3;
 float fTempG;
 float fTempD;
 uint8_t cWartoscPWM;
-
+extern FontDef Font_6x8;
+extern FontDef Font_7x10;
+extern FontDef Font_11x18;
+extern FontDef Font_16x26;
 
 /* USER CODE END PV */
 
@@ -123,9 +126,11 @@ int main(void)
 	//  odczytajTempCzujnikDolny(&fTempD);
 	  cWartoscPWM = CzlonP();
 	  OLED_NarysujPiksel(i++, 20);
+
+	  OLED_NarysujZnak('A', Font_7x10);
 	  OLED_OdswiezEkran();
 
-	  UstawPWM(cWartoscPWM, TIM_CHANNEL_4);
+	  UstawPWM(i, TIM_CHANNEL_4);
 	  HAL_Delay(500);
 
 

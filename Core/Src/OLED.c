@@ -9,6 +9,8 @@
 #include "main.h"
 #include "stm32c0xx_hal.h"
 #include <stdio.h>
+
+
 extern I2C_HandleTypeDef hi2c2;
 extern SPI_HandleTypeDef hspi1;
 
@@ -32,7 +34,7 @@ void OLED_WyslijDane(uint8_t* buffor, uint8_t rozmiar){
 }
 
 uint8_t OLED_Buffor[OLED_WYSOKOSC * OLED_SZEROKOSC / 8] = {"Witaj przygodo z wyswietlaczem OLED"};
-
+static SSD1306_t SSD1306;
 
 void OLED_Init(void){
 
@@ -50,34 +52,32 @@ void OLED_Init(void){
 	OLED_WyslijKomende(0xC8); //Set COM Output Scan Direction
 
 	OLED_WyslijKomende(0x00); //---set low column address
-
 	OLED_WyslijKomende(0x10); //---set high column address
-
 	OLED_WyslijKomende(0x40); //--set start line address - CHECK
-
 	OLED_WyslijKomende(0x81); //--set contrast control register - CHECK
 	OLED_WyslijKomende(0xFF);
 
-	OLED_WyslijKomende(0xA1); //--set segment re-map 0 to 127 - CHECK
+	OLED_WyslijKomende(0xA0); // Mirror horizontally
+	//OLED_WyslijKomende(0xA1); //--set segment re-map 0 to 127 - CHECK
 
-	OLED_WyslijKomende(0xA6); //--set normal color
+	OLED_WyslijKomende(0xA7); //--set inverse color
+	//OLED_WyslijKomende(0xA6); //--set normal color
 
-	OLED_WyslijKomende(0xA8); //--set multiplex ratio(1 to 64) - CHECK
+	//OLED_WyslijKomende(0xA8); //--set multiplex ratio(1 to 64) - CHECK
+	OLED_WyslijKomende(0xFF);
 
-	OLED_WyslijKomende(0x3F); // ustawia wysokosc = 64
+	//OLED_WyslijKomende(0x3F); // ustawia wysokosc = 64
+	OLED_WyslijKomende(0x1F); // ustawia wysokosc = 32
 
 	OLED_WyslijKomende(0xA4); //0xa4,Output follows RAM content;0xa5,Output ignores RAM content
 
 	OLED_WyslijKomende(0xD3); //-set display offset - CHECK
-
 	OLED_WyslijKomende(0x00); //-not offset
 
 	OLED_WyslijKomende(0xD5); //--set display clock divide ratio/oscillator frequency
-
 	OLED_WyslijKomende(0xF0); //--set divide ratio
 
 	OLED_WyslijKomende(0xD9); //--set pre-charge period
-
 	OLED_WyslijKomende(0x22); //
 
 	OLED_WyslijKomende(0xDA); //--set com pins hardware configuration - CHECK
@@ -85,14 +85,10 @@ void OLED_Init(void){
 	OLED_WyslijKomende(0x12); // wysokość = 64
 
 	OLED_WyslijKomende(0xDB); //--set vcomh
-
 	OLED_WyslijKomende(0x20); //0x20,0.77xVcc
 
 	OLED_WyslijKomende(0x8D); //--set DC-DC enable
-
 	OLED_WyslijKomende(0x14); //
-
-
 	OLED_WyslijKomende(0xAF); //--turn on SSD1306 panel
 	OLED_OdswiezEkran();
 
@@ -114,5 +110,35 @@ void OLED_NarysujPiksel(uint8_t x, uint8_t y){
 
 	OLED_Buffor[x + (y / 8) * OLED_SZEROKOSC] |= 1 << (y % 8);
 
+}
+
+
+char OLED_NarysujZnak(char cZnak, FontDef Font)
+{
+    uint32_t i, b, j;
+
+    //Wyjdź gdy znak nie ma reprezentacji graficznej
+    if (cZnak < 32 || cZnak > 126)
+        return 0;
+
+    //Sprawdź czu jest zmiejsce na znak w bieżącej linii
+    if ((OLED_SZEROKOSC < (SSD1306.CurrentX + Font.FontWidth)) || (OLED_WYSOKOSC < (SSD1306.CurrentY + Font.FontHeight)))
+        return 0;
+
+    for (i = 0; i < Font.FontHeight; i++)
+    {
+        b = Font.data[(cZnak - 32) * Font.FontHeight + i];
+        for (j = 0; j < Font.FontWidth; j++)
+        {
+            if((b << j) & 0x8000)
+            	OLED_NarysujPiksel(SSD1306.CurrentX + j, (SSD1306.CurrentY + i));
+             else
+            	OLED_NarysujPiksel(SSD1306.CurrentX + j, (SSD1306.CurrentY + i));
+        }
+    }
+
+    //Uaktualinij zajętą pozycję
+    SSD1306.CurrentX += Font.FontWidth;
+    return cZnak;
 }
 

@@ -1,5 +1,6 @@
-../Core/Src/OLED.c:18:6:OLED_WyslijKomende	1
-../Core/Src/OLED.c:26:6:OLED_WyslijDane	1
-../Core/Src/OLED.c:37:6:OLED_Init	1
-../Core/Src/OLED.c:101:6:OLED_OdswiezEkran	2
-../Core/Src/OLED.c:112:6:OLED_NarysujPiksel	3
+../Core/Src/OLED.c:20:6:OLED_WyslijKomende	1
+../Core/Src/OLED.c:28:6:OLED_WyslijDane	1
+../Core/Src/OLED.c:39:6:OLED_Init	1
+../Core/Src/OLED.c:97:6:OLED_OdswiezEkran	2
+../Core/Src/OLED.c:108:6:OLED_NarysujPiksel	3
+../Core/Src/OLED.c:116:6:OLED_NarysujZnak	8
