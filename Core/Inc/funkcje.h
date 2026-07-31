@@ -13,11 +13,13 @@
 #include "main.h"
 #include "LM75.h"
 #include "OLED.h"
+#include "Regulator.h"
 
 
 extern char Napis[];
 extern float fTemp;
-
+extern float fWzmocnienie;
+extern uint8_t cWartoscPWM;
 
 void WypiszTemp(void);
 

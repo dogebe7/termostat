@@ -15,13 +15,14 @@
 
 extern TIM_HandleTypeDef htim3;
 extern float fTemp;
+extern float fWzmocnienie;
 
 #define TEMP_MIN 0
 #define TEMP_MAX 100
 
 void UstawPWM(uint16_t sPWM, uint8_t cKanal);
 void WlaczPWM(uint8_t cKanal);
-float CzlonP();
+uint8_t CzlonP();
 
 
 

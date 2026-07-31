@@ -32,7 +32,7 @@ Core/Src/funkcje.o: ../Core/Src/funkcje.c ../Core/Inc/funkcje.h \
  ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_tim.h \
  ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_tim_ex.h \
  ../Core/Inc/main.h ../Core/Inc/LM75.h ../Core/Inc/OLED.h \
- ../Core/Inc/OLED_Czcionka.h
+ ../Core/Inc/OLED_Czcionka.h ../Core/Inc/Regulator.h
 ../Core/Inc/funkcje.h:
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal.h:
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_ll_system.h:
@@ -70,3 +70,4 @@ Core/Src/funkcje.o: ../Core/Src/funkcje.c ../Core/Inc/funkcje.h \
 ../Core/Inc/LM75.h:
 ../Core/Inc/OLED.h:
 ../Core/Inc/OLED_Czcionka.h:
+../Core/Inc/Regulator.h:

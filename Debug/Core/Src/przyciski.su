@@ -1,0 +1,2 @@
+../Core/Src/przyciski.c:11:6:SprawdzPrzycisk	32	static
+../Core/Src/przyciski.c:40:6:HAL_GPIO_EXTI_Rising_Callback	16	static

@@ -63,12 +63,15 @@ void Error_Handler(void);
 #define SHUTDOWN_GPIO_Port GPIOA
 #define KEY1_Pin GPIO_PIN_8
 #define KEY1_GPIO_Port GPIOA
+#define KEY1_EXTI_IRQn EXTI4_15_IRQn
 #define LED_Pin GPIO_PIN_6
 #define LED_GPIO_Port GPIOC
 #define KEY2_Pin GPIO_PIN_11
 #define KEY2_GPIO_Port GPIOA
+#define KEY2_EXTI_IRQn EXTI4_15_IRQn
 #define KEY3_Pin GPIO_PIN_12
 #define KEY3_GPIO_Port GPIOA
+#define KEY3_EXTI_IRQn EXTI4_15_IRQn
 #define CHIPSELECT_Pin GPIO_PIN_4
 #define CHIPSELECT_GPIO_Port GPIOB
 #define D_C_Pin GPIO_PIN_6

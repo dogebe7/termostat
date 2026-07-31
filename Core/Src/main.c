@@ -28,6 +28,7 @@
 #include "stdio.h"
 #include "string.h"
 #include "funkcje.h"
+#include "przyciski.h"
 
 /* USER CODE END Includes */
 
@@ -57,7 +58,8 @@ TIM_HandleTypeDef htim3;
 /* USER CODE BEGIN PV */
 float fTemp;
 uint8_t cWartoscPWM;
-char Napis[25];
+float fWzmocnienie;
+char Napis[40];
 
 
 /* USER CODE END PV */
@@ -115,6 +117,7 @@ int main(void)
   OLED_Init();
 
   cWartoscPWM = 0;
+  fWzmocnienie = 1;
 
   /* USER CODE END 2 */
 
@@ -122,14 +125,16 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  WypiszTemp();
-
 	  cWartoscPWM = CzlonP();
 	  UstawPWM(cWartoscPWM, TIM_CHANNEL_4);
 
+	  WypiszTemp();
+	  OLED_OdswiezEkran();
 
-	  HAL_Delay(500);
-	  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);	//mignij LED
+
+
+	  //HAL_Delay(500);
+	  //HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);	//mignij LED
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -378,7 +383,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : KEY1_Pin KEY2_Pin KEY3_Pin */
   GPIO_InitStruct.Pin = KEY1_Pin|KEY2_Pin|KEY3_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
@@ -395,6 +400,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI4_15_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
