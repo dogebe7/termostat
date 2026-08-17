@@ -6,3 +6,5 @@
 ../Core/Src/stm32c0xx_hal_msp.c:233:6:HAL_TIM_Base_MspInit	24	static
 ../Core/Src/stm32c0xx_hal_msp.c:250:6:HAL_TIM_MspPostInit	48	static
 ../Core/Src/stm32c0xx_hal_msp.c:283:6:HAL_TIM_Base_MspDeInit	16	static
+../Core/Src/stm32c0xx_hal_msp.c:305:6:HAL_IRDA_MspInit	88	static
+../Core/Src/stm32c0xx_hal_msp.c:356:6:HAL_IRDA_MspDeInit	16	static

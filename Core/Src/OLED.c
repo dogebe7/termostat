@@ -41,7 +41,7 @@ static OLED_t OLED;
 
 
 
-void OLED_Init(void){
+void WlaczOLED(void){
 
 	HAL_Delay(100);
 

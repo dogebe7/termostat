@@ -1,6 +1,6 @@
 ../Core/Src/OLED.c:21:6:OLED_WyslijKomende	16	static
 ../Core/Src/OLED.c:29:6:OLED_WyslijDane	16	static
-../Core/Src/OLED.c:44:6:OLED_Init	16	static
+../Core/Src/OLED.c:44:6:WlaczOLED	16	static
 ../Core/Src/OLED.c:115:6:OLED_OdswiezEkran	16	static
 ../Core/Src/OLED.c:126:6:OLED_NarysujPiksel	24	static
 ../Core/Src/OLED.c:147:6:OLED_UstawKursor	16	static

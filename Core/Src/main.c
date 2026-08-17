@@ -28,7 +28,7 @@
 #include "stdio.h"
 #include "string.h"
 #include "funkcje.h"
-#include "przyciski.h"
+#include "Irda.h"
 
 /* USER CODE END Includes */
 
@@ -55,6 +55,8 @@ SPI_HandleTypeDef hspi1;
 
 TIM_HandleTypeDef htim3;
 
+IRDA_HandleTypeDef hirda1;
+
 /* USER CODE BEGIN PV */
 float fTemp;
 uint8_t cWartoscPWM;
@@ -70,6 +72,7 @@ static void MX_GPIO_Init(void);
 static void MX_I2C2_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_SPI1_Init(void);
+static void MX_USART1_IRDA_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -112,9 +115,11 @@ int main(void)
   MX_I2C2_Init();
   MX_TIM3_Init();
   MX_SPI1_Init();
+  MX_USART1_IRDA_Init();
   /* USER CODE BEGIN 2 */
   WlaczPWM(TIM_CHANNEL_4);
-  OLED_Init();
+  WlaczOLED();
+  WlaczIrda();
 
   cWartoscPWM = 0;
   fWzmocnienie = 1;
@@ -333,6 +338,39 @@ static void MX_TIM3_Init(void)
 }
 
 /**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_IRDA_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  hirda1.Instance = USART1;
+  hirda1.Init.BaudRate = 115200;
+  hirda1.Init.WordLength = IRDA_WORDLENGTH_8B;
+  hirda1.Init.Parity = IRDA_PARITY_NONE;
+  hirda1.Init.Mode = IRDA_MODE_RX;
+  hirda1.Init.Prescaler = 10;
+  hirda1.Init.PowerMode = IRDA_POWERMODE_NORMAL;
+  hirda1.Init.ClockPrescaler = IRDA_PRESCALER_DIV1;
+  if (HAL_IRDA_Init(&hirda1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -357,14 +395,6 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, CHIPSELECT_Pin|D_C_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pins : PA0 PA1 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF4_USART1;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PA2 PA3 */
   GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3;

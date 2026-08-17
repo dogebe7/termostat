@@ -13,6 +13,7 @@
 #include "main.h"
 #include "LM75.h"
 #include "OLED.h"
+#include "OLED_Czcionka.h"
 #include "Regulator.h"
 
 
@@ -22,6 +23,8 @@ extern float fWzmocnienie;
 extern uint8_t cWartoscPWM;
 
 void WypiszTemp(void);
+void SprawdzPrzycisk(uint8_t numer);
+
 
 
 #endif /* INC_FUNKCJE_H_ */

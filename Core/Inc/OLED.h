@@ -31,7 +31,7 @@ typedef struct{
 
 void OLED_WyslijKomende(uint8_t bajt);
 void OLED_WyslijDane(uint8_t* buffor, uint8_t rozmiar);
-void OLED_Init(void);
+void WlaczOLED(void);
 void OLED_OdswiezEkran(void);
 void OLED_NarysujPiksel(uint8_t x, uint8_t y, OLED_KOLOR kolor);
 void OLED_UstawKursor(uint8_t x, uint8_t y);
