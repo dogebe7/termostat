@@ -131,12 +131,20 @@ void OLED_RysujPiksel(uint8_t cPozX, uint8_t cPozY, uint8_t cŚwieci)
 	if(cPozX >= OLED_SZEROKOSC || cPozX < 0 || cPozY >= OLED_WYSOKOSC || cPozY < 0) return;
 
 	if (cŚwieci)
-		OLED_Buffor[cPozX + (cPozY / 8) * OLED_SZEROKOSC] |= 1 << (cPozY % 8);	//piksel zaświecony
+		OLED_Buffor[cPozX + (cPozY / 8) * OLED_SZEROKOSC] |=   1 << (cPozY % 8);	//piksel zaświecony
 	else
-		OLED_Buffor[cPozX] &= 1 << ~(cPozY % 8);	//piksel zgaszony
+		OLED_Buffor[cPozX + (cPozY / 8) * OLED_SZEROKOSC] &= ~(1 << (cPozY % 8));	//piksel zgaszony
 }
 
 
+
+////////////////////////////////////////////////////////////////////////////////
+// Rysuje na wyświetlaczu pojedynczy znak wybraną czcionką w bieżącym miejscy
+// Parametry:
+//  cZnak - kod ASCII znaku do wyświetlanie
+//  *Font - wskaźnik na czcionkę
+// Zwraca: nic
+////////////////////////////////////////////////////////////////////////////////
 char OLED_RysujZnak(char cZnak, FontDef *Font)
 {
     uint32_t i, b, j;

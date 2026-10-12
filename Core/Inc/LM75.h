@@ -15,7 +15,8 @@
 #define READ_ID_DOLNY 0x6
 #define READ_TEMP 0
 uint8_t odczytajID(void);
-uint8_t odczytajTempCzujnikGorny(float *fTemp);
+uint8_t CzytajTemperturęCzujnika(uint8_t cAdres, float *fTemp);
+//uint8_t odczytajTempCzujnikGorny(float *fTemp);
 uint8_t odczytajTempCzujnikDolny(float *fTemp);
 
 #endif /* INC_LM75_H_ */

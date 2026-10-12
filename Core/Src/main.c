@@ -24,6 +24,7 @@
 #include "LM75.h"
 #include "Regulator.h"
 #include "OLED.h"
+#include "stdio.h"
 
 /* USER CODE END Includes */
 
@@ -51,14 +52,16 @@ SPI_HandleTypeDef hspi1;
 TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
-float fTempG;
-float fTempD;
+float fTemp, fTempG, fTempD;	//temperatury
 uint8_t cWartoscPWM;
 extern FontDef Font_6x8;
 extern FontDef Font_7x10;
 extern FontDef Font_11x18;
 extern FontDef Font_16x26;
-
+char cBufor[20];		//zasobnik na napisy
+float fWartZadana[2] = {25.0f, 25.0f};	//wartosci zadane obu regulatorów
+float fWmocnienie[2] = {10.0f, 10.0f};	//wzmocnienie kp obu regulatorów
+uint8_t cWyjscie;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -111,29 +114,47 @@ int main(void)
   MX_TIM3_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
+  WlaczPWM(TIM_CHANNEL_3);
   WlaczPWM(TIM_CHANNEL_4);
-  //InicjujCzcionki();
   OLED_Init();
-  uint16_t i = 0;
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  OLED_RysujNapis("Tmierz  Tzad  Wyj", 0, 8, &Font_7x10);	//nagłówek
+  CzytajTemperturęCzujnika(LM75ADRESS_GORNY, &fTempG);	//inicjuj filtry IIR temperatury wartosciami poczatkowymi
+  CzytajTemperturęCzujnika(LM75ADRESS_DOLNY, &fTempD);
   while (1)
   {
-	//  odczytajID();
-	 // odczytajTempCzujnikGorny(&fTempG);
-	//  odczytajTempCzujnikDolny(&fTempD);
-	  cWartoscPWM = CzlonP();
+	  //regulator 1
+	  CzytajTemperturęCzujnika(LM75ADRESS_GORNY, &fTemp);
+	  fTempG = (31 * fTempG + fTemp) / 32;
+	  cWyjscie = CzlonP(fTempG, fWartZadana[0], fWmocnienie[0]);
+	  UstawPWM(cWyjscie, TIM_CHANNEL_3);
+	  sprintf(cBufor, "%.1f %.0f %d%% ", fTempG, fWartZadana[0], cWyjscie);
+	  OLED_RysujNapis(cBufor, 0, 20, &Font_11x18);
 
-	  OLED_RysujNapis("Test  7x10", 0,  8, &Font_7x10);
-	  OLED_RysujNapis("Test 11x18", 0, 20, &Font_11x18);
-	  OLED_RysujNapis("T 16x26", 0, 38, &Font_16x26);
+	  //regulator 2
+	  CzytajTemperturęCzujnika(LM75ADRESS_DOLNY, &fTemp);
+	  fTempD = (31 * fTempD + fTemp) / 32;
+	  cWyjscie = CzlonP(fTempD, fWartZadana[1], fWmocnienie[1]);
+	  UstawPWM(cWyjscie, TIM_CHANNEL_4);
+	  sprintf(cBufor, "%.1f %.0f %d%% ", fTempD, fWartZadana[1], cWyjscie);
+	  OLED_RysujNapis(cBufor, 0, 42, &Font_11x18);
+
+
+	  //sprintf(cBufor, "T2=%.1f ", fTempD);
+	  //OLED_RysujNapis(cBufor, 0, 32, &Font_11x18);
+
+
+	  //OLED_RysujNapis("Test  7x10", 0,  8, &Font_7x10);
+	  //OLED_RysujNapis("Test 11x18", 0, 20, &Font_11x18);
+	  //OLED_RysujNapis("T 16x26", 0, 38, &Font_16x26);
 	  OLED_OdswiezEkran();
 
-	  UstawPWM(i, TIM_CHANNEL_4);
-	  HAL_Delay(500);
+
+	  HAL_Delay(25);
 
 
 	  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);	//mignij LED
@@ -161,7 +182,7 @@ void SystemClock_Config(void)
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSIDiv = RCC_HSI_DIV2;
+  RCC_OscInitStruct.HSIDiv = RCC_HSI_DIV4;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
@@ -199,7 +220,7 @@ static void MX_I2C2_Init(void)
 
   /* USER CODE END I2C2_Init 1 */
   hi2c2.Instance = I2C2;
-  hi2c2.Init.Timing = 0x00805C87;
+  hi2c2.Init.Timing = 0x00402D41;
   hi2c2.Init.OwnAddress1 = 0;
   hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -414,7 +435,7 @@ static void MX_GPIO_Init(void)
 
 /**
   * @brief  Period elapsed callback in non blocking mode
-  * @note   This function is called  when TIM16 interrupt took place, inside
+  * @note   This function is called  when TIM17 interrupt took place, inside
   * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
   * a global variable "uwTick" used as application time base.
   * @param  htim : TIM handle
@@ -425,7 +446,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 0 */
 
   /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM16)
+  if (htim->Instance == TIM17)
   {
     HAL_IncTick();
   }

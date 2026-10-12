@@ -61,7 +61,7 @@ main-build: Termostat.elf secondary-outputs
 
 # Tool invocations
 Termostat.elf Termostat.map: $(OBJS) $(USER_OBJS) C:\projekty\termostat\termostat\STM32C092GCUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Termostat.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\projekty\termostat\termostat\STM32C092GCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Termostat.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "Termostat.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\projekty\termostat\termostat\STM32C092GCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Termostat.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

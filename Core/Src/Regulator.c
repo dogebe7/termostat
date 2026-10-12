@@ -11,8 +11,7 @@
 extern TIM_HandleTypeDef htim3;
 extern float fTempG;
 extern float fTempD;
-#define TEMP_MIN 0
-#define TEMP_MAX 100
+
 
 
 void UstawPWM(uint16_t sPWM, uint8_t cKanal){
@@ -30,24 +29,27 @@ void WlaczPWM(uint8_t cKanal){
 
 
 
-
-float CzlonP(){
-
-	float fBlad;
+////////////////////////////////////////////////////////////////////////////////
+// Regulator proporcjonalny
+// Parametry:
+//  fWejscie - wartość wejsciowa podlegajaca regulacji
+//  fWartZadana - wartość zadana do jakiej dąży regulacja
+// Zwraca: wartość wysterowania w zakresie 0..100
+////////////////////////////////////////////////////////////////////////////////
+uint8_t CzlonP(float fWejscie, float fWartZadana, float fWzmocnienie)
+{
 	float fWyjscie;
 	float fUchyb;
-	float fWzmocnienie = 1;
-	float fWstepneWysterowanie = 0;
-	float fWartZadana = 10;
-	float fZakresTemperatur = TEMP_MAX - TEMP_MIN;
 
-	fBlad = odczytajTempCzujnikGorny(&fTempG) - fWartZadana;
-	fUchyb = fBlad / fZakresTemperatur;
-	fWyjscie = (fUchyb * fWzmocnienie + fWstepneWysterowanie) * 65535;
+	fUchyb = fWejscie - fWartZadana;
+	fWyjscie = fUchyb * fWzmocnienie;
 
-
-
-	return fWyjscie;
+	//ograniczenie wysterowanie do zdefiniowanego zakresu
+	if (fWyjscie < WYSTEROWANIE_MIN)
+		fWyjscie = WYSTEROWANIE_MIN;
+	if (fWyjscie > WYSTEROWANIE_MAX)
+		fWyjscie = WYSTEROWANIE_MAX;
+	return (uint8_t)fWyjscie;
 }
 
 

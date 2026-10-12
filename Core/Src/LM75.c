@@ -25,7 +25,7 @@ uint8_t odczytajID(void){
 }
 
 
-uint8_t odczytajTempCzujnikGorny(float *fTemp){
+uint8_t CzytajTemperturęCzujnika(uint8_t cAdres, float *fTemp){
 
 	uint8_t cBlad;
 	uint16_t sTemp;

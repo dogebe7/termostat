@@ -3,6 +3,6 @@
 ../Core/Src/OLED.c:40:6:OLED_Init	1
 ../Core/Src/OLED.c:110:6:OLED_OdswiezEkran	2
 ../Core/Src/OLED.c:129:6:OLED_RysujPiksel	4
-../Core/Src/OLED.c:140:6:OLED_RysujZnak	8
-../Core/Src/OLED.c:179:6:OLED_RysujNapis	3
-../Core/Src/OLED.c:203:6:OLED_CzyśćBuforEkranu	3
+../Core/Src/OLED.c:148:6:OLED_RysujZnak	8
+../Core/Src/OLED.c:187:6:OLED_RysujNapis	3
+../Core/Src/OLED.c:211:6:OLED_CzyśćBuforEkranu	3
