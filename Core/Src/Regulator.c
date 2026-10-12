@@ -8,6 +8,8 @@
 #include "main.h"
 #include "stm32c0xx_hal.h"
 #include "LM75.h"
+#include <math.h>
+
 extern TIM_HandleTypeDef htim3;
 extern float fTempG;
 extern float fTempD;
@@ -49,7 +51,7 @@ uint8_t CzlonP(float fWejscie, float fWartZadana, float fWzmocnienie)
 		fWyjscie = WYSTEROWANIE_MIN;
 	if (fWyjscie > WYSTEROWANIE_MAX)
 		fWyjscie = WYSTEROWANIE_MAX;
-	return (uint8_t)fWyjscie;
+	return (uint8_t)roundf(fWyjscie);
 }
 
 

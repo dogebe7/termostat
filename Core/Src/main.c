@@ -132,7 +132,7 @@ int main(void)
 	  fTempG = (31 * fTempG + fTemp) / 32;
 	  cWyjscie = CzlonP(fTempG, fWartZadana[0], fWmocnienie[0]);
 	  UstawPWM(cWyjscie, TIM_CHANNEL_3);
-	  sprintf(cBufor, "%.1f %.0f %d%% ", fTempG, fWartZadana[0], cWyjscie);
+	  sprintf(cBufor, "%.1f %.0f %2d%% ", fTempG, fWartZadana[0], cWyjscie);
 	  OLED_RysujNapis(cBufor, 0, 20, &Font_11x18);
 
 	  //regulator 2
@@ -140,24 +140,18 @@ int main(void)
 	  fTempD = (31 * fTempD + fTemp) / 32;
 	  cWyjscie = CzlonP(fTempD, fWartZadana[1], fWmocnienie[1]);
 	  UstawPWM(cWyjscie, TIM_CHANNEL_4);
-	  sprintf(cBufor, "%.1f %.0f %d%% ", fTempD, fWartZadana[1], cWyjscie);
+	  sprintf(cBufor, "%.1f %.0f %2d%% ", fTempD, fWartZadana[1], cWyjscie);
 	  OLED_RysujNapis(cBufor, 0, 42, &Font_11x18);
-
-
-	  //sprintf(cBufor, "T2=%.1f ", fTempD);
-	  //OLED_RysujNapis(cBufor, 0, 32, &Font_11x18);
-
 
 	  //OLED_RysujNapis("Test  7x10", 0,  8, &Font_7x10);
 	  //OLED_RysujNapis("Test 11x18", 0, 20, &Font_11x18);
 	  //OLED_RysujNapis("T 16x26", 0, 38, &Font_16x26);
 	  OLED_OdswiezEkran();
-
-
-	  HAL_Delay(25);
-
-
-	  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);	//mignij LED
+	  __WFI();   //Uśpij MCU następnie: Wait For Interrupt
+	  HAL_Delay(49);
+	  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);	//włącz LED na krótką chwile aby minimalizować zużycie energii i grzanie się płytki
+	  HAL_Delay(1);
+	  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);		//wyłącz LED
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -182,7 +176,7 @@ void SystemClock_Config(void)
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSIDiv = RCC_HSI_DIV4;
+  RCC_OscInitStruct.HSIDiv = RCC_HSI_DIV16;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
@@ -220,7 +214,7 @@ static void MX_I2C2_Init(void)
 
   /* USER CODE END I2C2_Init 1 */
   hi2c2.Instance = I2C2;
-  hi2c2.Init.Timing = 0x00402D41;
+  hi2c2.Init.Timing = 0x00100B0C;
   hi2c2.Init.OwnAddress1 = 0;
   hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -314,7 +308,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 0;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 256;
+  htim3.Init.Period = 100;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
