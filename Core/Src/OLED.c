@@ -11,8 +11,11 @@
 #include <stdio.h>
 
 
+
 extern I2C_HandleTypeDef hi2c2;
 extern SPI_HandleTypeDef hspi1;
+uint8_t OLED_Buffor[OLED_WYSOKOSC * OLED_SZEROKOSC / 8] = {"Witaj przygodo z wyswietlaczem OLED"};
+static SSD1306_t SSD1306;
 
 
 
@@ -33,23 +36,22 @@ void OLED_WyslijDane(uint8_t* buffor, uint8_t rozmiar){
 	HAL_GPIO_WritePin(CHIPSELECT_GPIO_Port, CHIPSELECT_Pin, GPIO_PIN_SET); 		//zwolnij OLED
 }
 
-uint8_t OLED_Buffor[OLED_WYSOKOSC * OLED_SZEROKOSC / 8] = {"Witaj przygodo z wyswietlaczem OLED"};
-static SSD1306_t SSD1306;
 
 void OLED_Init(void){
 
 	HAL_Delay(100);
 
 	OLED_WyslijKomende(0xAE); //display off
-
 	OLED_WyslijKomende(0x20); //Set Memory Addressing Mode
-
 	OLED_WyslijKomende(0x00); // 00b,Horizontal Addressing Mode; 01b,Vertical Addressing Mode;
     						  // 10b,Page Addressing Mode (RESET); 11b,Invalid
 
 	OLED_WyslijKomende(0xB0); //Set Page Start Address for Page Addressing Mode,0-7
-
+#ifdef SSD1306_MIRROR_VERT
+	OLED_WyslijKomende(0xC0); // Mirror vertically
+#else
 	OLED_WyslijKomende(0xC8); //Set COM Output Scan Direction
+#endif
 
 	OLED_WyslijKomende(0x00); //---set low column address
 	OLED_WyslijKomende(0x10); //---set high column address
@@ -57,11 +59,17 @@ void OLED_Init(void){
 	OLED_WyslijKomende(0x81); //--set contrast control register - CHECK
 	OLED_WyslijKomende(0xFF);
 
+#ifdef SSD1306_MIRROR_HORIZ
 	OLED_WyslijKomende(0xA0); // Mirror horizontally
-	//OLED_WyslijKomende(0xA1); //--set segment re-map 0 to 127 - CHECK
+#else
+	OLED_WyslijKomende(0xA1); //--set segment re-map 0 to 127 - CHECK
+#endif
 
+#ifdef SSD1306_INVERSE_COLOR
 	OLED_WyslijKomende(0xA7); //--set inverse color
-	//OLED_WyslijKomende(0xA6); //--set normal color
+#else
+	OLED_WyslijKomende(0xA6); //--set normal color
+#endif
 
 	//OLED_WyslijKomende(0xA8); //--set multiplex ratio(1 to 64) - CHECK
 	OLED_WyslijKomende(0xFF);
@@ -90,8 +98,13 @@ void OLED_Init(void){
 	OLED_WyslijKomende(0x8D); //--set DC-DC enable
 	OLED_WyslijKomende(0x14); //
 	OLED_WyslijKomende(0xAF); //--turn on SSD1306 panel
-	OLED_OdswiezEkran();
 
+	OLED_CzyśćBuforEkranu();	//wyczyść bufor
+
+	OLED_OdswiezEkran();
+	SSD1306.cZainicjowany = 1;
+	SSD1306.sPozX = 0;
+	SSD1306.sPozY = 0;
 }
 
 void OLED_OdswiezEkran(void){
@@ -105,15 +118,26 @@ void OLED_OdswiezEkran(void){
 }
 
 
-void OLED_NarysujPiksel(uint8_t x, uint8_t y){
-	if(x >= OLED_SZEROKOSC || x < 0 || y >= OLED_WYSOKOSC || y < 0) return;
 
-	OLED_Buffor[x + (y / 8) * OLED_SZEROKOSC] |= 1 << (y % 8);
+////////////////////////////////////////////////////////////////////////////////
+// Rysuje na wyświetlaczu pojedynczy piksel w punkcie o podanych współrzednych ekranowych
+// Parametry:
+//  cPozX, cPozY - współrzedne ekranowe w pikselach
+//  cŚwieci: 1=piksel zaświecony, 0=piksel zgaszony
+// Zwraca: nic
+////////////////////////////////////////////////////////////////////////////////
+void OLED_RysujPiksel(uint8_t cPozX, uint8_t cPozY, uint8_t cŚwieci)
+{
+	if(cPozX >= OLED_SZEROKOSC || cPozX < 0 || cPozY >= OLED_WYSOKOSC || cPozY < 0) return;
 
+	if (cŚwieci)
+		OLED_Buffor[cPozX + (cPozY / 8) * OLED_SZEROKOSC] |= 1 << (cPozY % 8);	//piksel zaświecony
+	else
+		OLED_Buffor[cPozX] &= 1 << ~(cPozY % 8);	//piksel zgaszony
 }
 
 
-char OLED_NarysujZnak(char cZnak, FontDef Font)
+char OLED_RysujZnak(char cZnak, FontDef *Font)
 {
     uint32_t i, b, j;
 
@@ -122,23 +146,66 @@ char OLED_NarysujZnak(char cZnak, FontDef Font)
         return 0;
 
     //Sprawdź czu jest zmiejsce na znak w bieżącej linii
-    if ((OLED_SZEROKOSC < (SSD1306.CurrentX + Font.FontWidth)) || (OLED_WYSOKOSC < (SSD1306.CurrentY + Font.FontHeight)))
+    if ((OLED_SZEROKOSC < (SSD1306.sPozX + Font->cFontWidth)) || (OLED_WYSOKOSC < (SSD1306.sPozY + Font->cFontHeight)))
         return 0;
 
-    for (i = 0; i < Font.FontHeight; i++)
+    for (i = 0; i < Font->cFontHeight; i++)
     {
-        b = Font.data[(cZnak - 32) * Font.FontHeight + i];
-        for (j = 0; j < Font.FontWidth; j++)
+        b = Font->sData[(cZnak - 32) * Font->cFontHeight + i];
+        for (j = 0; j < Font->cFontWidth; j++)
         {
             if((b << j) & 0x8000)
-            	OLED_NarysujPiksel(SSD1306.CurrentX + j, (SSD1306.CurrentY + i));
+            	OLED_RysujPiksel(SSD1306.sPozX + j, (SSD1306.sPozY + i), 1);	//zaświeć
              else
-            	OLED_NarysujPiksel(SSD1306.CurrentX + j, (SSD1306.CurrentY + i));
+            	OLED_RysujPiksel(SSD1306.sPozX + j, (SSD1306.sPozY + i), 0);	//zgaś
         }
     }
 
     //Uaktualinij zajętą pozycję
-    SSD1306.CurrentX += Font.FontWidth;
+    SSD1306.sPozX += Font->cFontWidth;
     return cZnak;
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Rysuje na wyświetlaczu napis wybraną czcionką w miejscu o podanych współrzędnych
+// Parametry:
+//  *cNapis - wskaźnik na napis do wyświetlenia
+//  cPozX, cPozY - współrzedne ekranowe w pikselach
+//  *Font - wskaźnik na czcionkę
+// Zwraca: kod ostatnio rysowanego znaku lub 0 jeżeli blędny znak
+////////////////////////////////////////////////////////////////////////////////
+char OLED_RysujNapis(char *cNapis, uint8_t cPozX, uint8_t cPozY, FontDef *Font)
+{
+	uint8_t cRysowanyZnak;
+
+	SSD1306.sPozX = cPozX;
+	SSD1306.sPozY = cPozY;
+
+	while (*cNapis)
+	{
+		cRysowanyZnak = OLED_RysujZnak(*cNapis, Font);
+		if (cRysowanyZnak != *cNapis)
+			return cRysowanyZnak;	//wyjdź jeżeli trafił się niedrukowalny znak
+		cNapis++;	//następny znak
+	}
+	return cRysowanyZnak;
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Czyści bufor ekranu
+// Parametry: brak
+// Zwraca: nic
+////////////////////////////////////////////////////////////////////////////////
+void OLED_CzyśćBuforEkranu(void)
+{
+	for (uint16_t i=0; i<OLED_WYSOKOSC; i++)
+	{
+		for (uint16_t j=0; j<OLED_SZEROKOSC / 8; j++)
+			OLED_Buffor[j + i*OLED_SZEROKOSC/8] = 0;
+	}
 }
 

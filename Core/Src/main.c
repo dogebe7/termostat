@@ -112,6 +112,7 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   WlaczPWM(TIM_CHANNEL_4);
+  //InicjujCzcionki();
   OLED_Init();
   uint16_t i = 0;
 
@@ -125,9 +126,10 @@ int main(void)
 	 // odczytajTempCzujnikGorny(&fTempG);
 	//  odczytajTempCzujnikDolny(&fTempD);
 	  cWartoscPWM = CzlonP();
-	  OLED_NarysujPiksel(i++, 20);
 
-	  OLED_NarysujZnak('A', Font_7x10);
+	  OLED_RysujNapis("Test  7x10", 0,  8, &Font_7x10);
+	  OLED_RysujNapis("Test 11x18", 0, 20, &Font_11x18);
+	  OLED_RysujNapis("T 16x26", 0, 38, &Font_16x26);
 	  OLED_OdswiezEkran();
 
 	  UstawPWM(i, TIM_CHANNEL_4);
@@ -159,7 +161,7 @@ void SystemClock_Config(void)
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSIDiv = RCC_HSI_DIV4;
+  RCC_OscInitStruct.HSIDiv = RCC_HSI_DIV2;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
@@ -197,7 +199,7 @@ static void MX_I2C2_Init(void)
 
   /* USER CODE END I2C2_Init 1 */
   hi2c2.Instance = I2C2;
-  hi2c2.Init.Timing = 0x00402D41;
+  hi2c2.Init.Timing = 0x00805C87;
   hi2c2.Init.OwnAddress1 = 0;
   hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -409,6 +411,28 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM16 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM16)
+  {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.
