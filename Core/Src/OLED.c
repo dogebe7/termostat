@@ -14,9 +14,8 @@
 
 extern I2C_HandleTypeDef hi2c2;
 extern SPI_HandleTypeDef hspi1;
-uint8_t OLED_Buffor[OLED_WYSOKOSC * OLED_SZEROKOSC / 8] = {"Witaj przygodo z wyswietlaczem OLED"};
+uint8_t OLED_Buffor[OLED_WYSOKOSC * OLED_SZEROKOSC / 8];
 static SSD1306_t SSD1306;
-
 
 
 
@@ -199,6 +198,37 @@ char OLED_RysujNapis(char *cNapis, uint8_t cPozX, uint8_t cPozY, FontDef *Font)
 		cNapis++;	//następny znak
 	}
 	return cRysowanyZnak;
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Rysuje bitmapę w miejscu o podanych współrzędnych
+// Pracuje z bitmapami generowanymi przez Advanced Image2C++ Converter: https://image2cpp.42web.io
+// Parametry:
+//  cStartX, cStartY - współrzedne ekranowe lewego górnego narożnika bitmapy w pikselach
+//  cSzer, cWys - szerokość i wysokość bitmapy
+//  *cBitmapa - wskaźnik na bitmapę
+// Zwraca: nic
+////////////////////////////////////////////////////////////////////////////////
+void RysujBitmape(uint8_t cStartX, uint8_t cStartY, uint8_t cSzer, uint8_t cWys, uint8_t *cBitmapa)
+{
+	uint8_t cObraz;
+
+	for (uint8_t y = 0; y < cWys; y++)	//iteracja po wierszach bitmapy
+	{
+		for (uint8_t x = 0; x < cSzer/8; x++)	//iteracja po bajtach wiersza
+		{
+			cObraz = cBitmapa[y * cSzer/8 + x];
+			for (uint8_t b = 0; b < 8; b++)
+			{
+				if((cObraz << b) & 0x80)
+					OLED_RysujPiksel(cStartX + x*8 + b, (cStartY + y), 1);	//zaświeć
+				else
+					OLED_RysujPiksel(cStartX + x*8 + b, (cStartY + y), 0);	//zgaś
+			}
+		}
+	}
 }
 
 

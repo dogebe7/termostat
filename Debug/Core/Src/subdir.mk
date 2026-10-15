@@ -8,6 +8,7 @@ C_SRCS += \
 ../Core/Src/LM75.c \
 ../Core/Src/OLED.c \
 ../Core/Src/Regulator.c \
+../Core/Src/logo_ITWL.c \
 ../Core/Src/main.c \
 ../Core/Src/ssd1306_fonts.c \
 ../Core/Src/stm32c0xx_hal_msp.c \
@@ -21,6 +22,7 @@ OBJS += \
 ./Core/Src/LM75.o \
 ./Core/Src/OLED.o \
 ./Core/Src/Regulator.o \
+./Core/Src/logo_ITWL.o \
 ./Core/Src/main.o \
 ./Core/Src/ssd1306_fonts.o \
 ./Core/Src/stm32c0xx_hal_msp.o \
@@ -34,6 +36,7 @@ C_DEPS += \
 ./Core/Src/LM75.d \
 ./Core/Src/OLED.d \
 ./Core/Src/Regulator.d \
+./Core/Src/logo_ITWL.d \
 ./Core/Src/main.d \
 ./Core/Src/ssd1306_fonts.d \
 ./Core/Src/stm32c0xx_hal_msp.d \
@@ -51,7 +54,7 @@ Core/Src/%.o Core/Src/%.su Core/Src/%.cyclo: ../Core/Src/%.c Core/Src/subdir.mk
 clean: clean-Core-2f-Src
 
 clean-Core-2f-Src:
-	-$(RM) ./Core/Src/LM75.cyclo ./Core/Src/LM75.d ./Core/Src/LM75.o ./Core/Src/LM75.su ./Core/Src/OLED.cyclo ./Core/Src/OLED.d ./Core/Src/OLED.o ./Core/Src/OLED.su ./Core/Src/Regulator.cyclo ./Core/Src/Regulator.d ./Core/Src/Regulator.o ./Core/Src/Regulator.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/ssd1306_fonts.cyclo ./Core/Src/ssd1306_fonts.d ./Core/Src/ssd1306_fonts.o ./Core/Src/ssd1306_fonts.su ./Core/Src/stm32c0xx_hal_msp.cyclo ./Core/Src/stm32c0xx_hal_msp.d ./Core/Src/stm32c0xx_hal_msp.o ./Core/Src/stm32c0xx_hal_msp.su ./Core/Src/stm32c0xx_hal_timebase_tim.cyclo ./Core/Src/stm32c0xx_hal_timebase_tim.d ./Core/Src/stm32c0xx_hal_timebase_tim.o ./Core/Src/stm32c0xx_hal_timebase_tim.su ./Core/Src/stm32c0xx_it.cyclo ./Core/Src/stm32c0xx_it.d ./Core/Src/stm32c0xx_it.o ./Core/Src/stm32c0xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32c0xx.cyclo ./Core/Src/system_stm32c0xx.d ./Core/Src/system_stm32c0xx.o ./Core/Src/system_stm32c0xx.su
+	-$(RM) ./Core/Src/LM75.cyclo ./Core/Src/LM75.d ./Core/Src/LM75.o ./Core/Src/LM75.su ./Core/Src/OLED.cyclo ./Core/Src/OLED.d ./Core/Src/OLED.o ./Core/Src/OLED.su ./Core/Src/Regulator.cyclo ./Core/Src/Regulator.d ./Core/Src/Regulator.o ./Core/Src/Regulator.su ./Core/Src/logo_ITWL.cyclo ./Core/Src/logo_ITWL.d ./Core/Src/logo_ITWL.o ./Core/Src/logo_ITWL.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/ssd1306_fonts.cyclo ./Core/Src/ssd1306_fonts.d ./Core/Src/ssd1306_fonts.o ./Core/Src/ssd1306_fonts.su ./Core/Src/stm32c0xx_hal_msp.cyclo ./Core/Src/stm32c0xx_hal_msp.d ./Core/Src/stm32c0xx_hal_msp.o ./Core/Src/stm32c0xx_hal_msp.su ./Core/Src/stm32c0xx_hal_timebase_tim.cyclo ./Core/Src/stm32c0xx_hal_timebase_tim.d ./Core/Src/stm32c0xx_hal_timebase_tim.o ./Core/Src/stm32c0xx_hal_timebase_tim.su ./Core/Src/stm32c0xx_it.cyclo ./Core/Src/stm32c0xx_it.d ./Core/Src/stm32c0xx_it.o ./Core/Src/stm32c0xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32c0xx.cyclo ./Core/Src/system_stm32c0xx.d ./Core/Src/system_stm32c0xx.o ./Core/Src/system_stm32c0xx.su
 
 .PHONY: clean-Core-2f-Src
 

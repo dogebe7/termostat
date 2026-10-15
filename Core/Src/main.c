@@ -58,6 +58,9 @@ extern FontDef Font_6x8;
 extern FontDef Font_7x10;
 extern FontDef Font_11x18;
 extern FontDef Font_16x26;
+extern const uint8_t logo_ITWL[];
+extern const int logo_ITWL_width;
+extern const int logo_ITWL_height;
 char cBufor[20];		//zasobnik na napisy
 float fWartZadana[2] = {25.0f, 25.0f};	//wartosci zadane obu regulatorów
 float fWmocnienie[2] = {10.0f, 10.0f};	//wzmocnienie kp obu regulatorów
@@ -122,20 +125,26 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  //Podczas uruchomienia wyświetl logo przez sekudę
+  RysujBitmape((OLED_SZEROKOSC - logo_ITWL_width)/2, 0, logo_ITWL_width, logo_ITWL_height, (uint8_t*)logo_ITWL);
+  OLED_OdswiezEkran();
+  HAL_Delay(1000);
+  OLED_CzyśćBuforEkranu();
   OLED_RysujNapis("Tmierz  Tzad  Wyj", 0, 8, &Font_7x10);	//nagłówek
-  CzytajTemperturęCzujnika(LM75ADRESS_GORNY, &fTempG);	//inicjuj filtry IIR temperatury wartosciami poczatkowymi
+  CzytajTemperturęCzujnika(LM75ADRESS_GORNY, &fTempG);	//inicjuj filtry IIR temperatury wartościami poczatkowymi
   CzytajTemperturęCzujnika(LM75ADRESS_DOLNY, &fTempD);
   while (1)
   {
-	  //regulator 1
+	  //regulator P1
 	  CzytajTemperturęCzujnika(LM75ADRESS_GORNY, &fTemp);
-	  fTempG = (31 * fTempG + fTemp) / 32;
+	  fTempG = (31 * fTempG + fTemp) / 32;		//filtr IIR temperatury
 	  cWyjscie = CzlonP(fTempG, fWartZadana[0], fWmocnienie[0]);
-	  UstawPWM(cWyjscie, TIM_CHANNEL_3);
+	  UstawPWM(cWyjscie, TIM_CHANNEL_3);		//regulator produkuje wynik w zakresie 0..99, kanał timera ma okres 100, więc pasują do siebie bez potrzeby przelicznia
 	  sprintf(cBufor, "%.1f %.0f %2d%% ", fTempG, fWartZadana[0], cWyjscie);
 	  OLED_RysujNapis(cBufor, 0, 20, &Font_11x18);
 
-	  //regulator 2
+	  //regulator P2
 	  CzytajTemperturęCzujnika(LM75ADRESS_DOLNY, &fTemp);
 	  fTempD = (31 * fTempD + fTemp) / 32;
 	  cWyjscie = CzlonP(fTempD, fWartZadana[1], fWmocnienie[1]);
@@ -147,11 +156,11 @@ int main(void)
 	  //OLED_RysujNapis("Test 11x18", 0, 20, &Font_11x18);
 	  //OLED_RysujNapis("T 16x26", 0, 38, &Font_16x26);
 	  OLED_OdswiezEkran();
-	  __WFI();   //Uśpij MCU następnie: Wait For Interrupt
 	  HAL_Delay(49);
 	  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);	//włącz LED na krótką chwile aby minimalizować zużycie energii i grzanie się płytki
 	  HAL_Delay(1);
 	  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);		//wyłącz LED
+	  __WFI();   //Uśpij MCU następnie: Wait For Interrupt
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
